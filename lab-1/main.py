@@ -1,6 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 
+EUR_TO_MDL = 19.5
+
 # Define headers to mimic a browser request
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
@@ -53,12 +55,17 @@ if response.status_code == 200:
                     'price_old': price_old,
                     'specifications': specifications
                 })
+
+    product_list = list(map(lambda p: {**p, 'price_mdl': float(p['price']) * EUR_TO_MDL if p['price'].replace('.', '', 1).isdigit() else 0}, product_list))
+
+
     
     for product in product_list:
         print(f"Name: {product['name']}")
         print(f"Link: {product['link']}")
         print(f"Year: {product['year']}")
         print(f"Price: {product['price']} EUR")
+        print(f"Price in MDL: {product['price_mdl']} MDL")
         print(f"Old Price: {product['price_old']} EUR")
         print(f"Specifications:")
         for spec_name, spec_value in product['specifications'].items():
