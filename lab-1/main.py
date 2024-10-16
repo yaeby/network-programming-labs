@@ -25,8 +25,8 @@ if response.status_code == 200:
         link_tag = name_tag.find('a') if name_tag else None
         link = link_tag['href'] if link_tag else 'No Link'
 
-        year_tag = product.find('span', class_='productYear')
-        year = year_tag.get_text(strip=True) if year_tag else 'NO year'
+        # year_tag = product.find('span', class_='productYear')
+        # year = year_tag.get_text(strip=True) if year_tag else 'NO year'
 
         price_new_tag = product.find('span', class_='cardojo-Price-amount')
         price_new = price_new_tag.get_text(strip=True).replace('€', '').strip() if price_new_tag else 'No Price'
@@ -39,13 +39,40 @@ if response.status_code == 200:
             if product_page_response.status_code == 200:
                 product_soup = BeautifulSoup(product_page_response.text, 'html.parser')
 
-                specifications = {}
-                specs_containers = product_soup.find_all('div', class_='col-6 col-md-4 item')
+                year_tag = product_soup.find('div', class_='col-6 col-md-4 item').find('h4') if product_soup.find('i', class_='fas fa-calendar') else None
+                year = year_tag.get_text(strip=True) if year_tag else 'NO year'
 
-                for spec in specs_containers:
-                    spec_name = spec.find('h6').get_text(strip=True)
-                    spec_value = spec.find('h4').get_text(strip=True)
-                    specifications[spec_name] = spec_value
+                mileage_tag = product_soup.find('i', class_='fas fa-tachometer-alt')
+                mileage = mileage_tag.find_next('h4').get_text(strip=True) if mileage_tag else 'NO mileage'
+
+                gearbox_tag = product_soup.find('i', class_='fas fa-cogs')
+                gearbox = gearbox_tag.find_next('h4').get_text(strip=True) if gearbox_tag else 'NO gearbox'
+
+                fuel_tag = product_soup.find('i', class_='fas fa-bolt')
+                fuel = fuel_tag.find_next('h4').get_text(strip=True) if fuel_tag else 'NO fuel'
+
+                engine_tag = product_soup.find('i', class_='fas fa-window-maximize')
+                engine = engine_tag.find_next('h4').get_text(strip=True) if engine_tag else 'NO engine'
+
+                power_tag = product_soup.find('i', class_='fas fa-horse-head')
+                power = power_tag.find_next('h4').get_text(strip=True) if power_tag else 'NO power'
+
+                color_tag = product_soup.find('i', class_='fas fa-car-side')
+                color = color_tag.find_next('h4').get_text(strip=True) if color_tag else 'NO color'
+
+                traction_tag = product_soup.find('i', class_='fas fa-car-side')
+                traction = traction_tag.find_next('h4').get_text(strip=True) if traction_tag else 'NO traction'
+
+                body_type_tag = product_soup.find('i', class_='fas fa-car')
+                body_type = body_type_tag.find_next('h4').get_text(strip=True) if body_type_tag else 'NO body type'
+
+                seats_tag = product_soup.find('i', class_='fas fa-user-friends')
+                seats = seats_tag.find_next('h4').get_text(strip=True) if seats_tag else 'NO seats'
+
+                consumption_tag = product_soup.find('i', class_='fas fa-gas-pump')
+                consumption = consumption_tag.find_next('h4').get_text(strip=True) if consumption_tag else 'NO consumption'
+
+
 
                 product_list.append({
                     'name': name,
@@ -53,10 +80,22 @@ if response.status_code == 200:
                     'year': year,
                     'price': price_new,
                     'price_old': price_old,
-                    'specifications': specifications
+                    'mileage': mileage,
+                    'gearbox': gearbox,
+                    'fuel': fuel,
+                    'engine': engine,
+                    'power': power,
+                    'color': color,
+                    'traction': traction,
+                    'body_type': body_type,
+                    'seats': seats,
+                    'consumption': consumption
                 })
 
-    product_list = list(map(lambda p: {**p, 'price_mdl': float(p['price']) * EUR_TO_MDL if p['price'].replace('.', '', 1).isdigit() else 0}, product_list))
+    product_list = list(map(lambda p: 
+                            {**p, 'price_mdl': float(p['price']) * EUR_TO_MDL if p['price'].replace('.', '', 1).isdigit() else 0}, 
+                            product_list
+                            ))
 
 
     
@@ -67,10 +106,19 @@ if response.status_code == 200:
         print(f"Price: {product['price']} EUR")
         print(f"Price in MDL: {product['price_mdl']} MDL")
         print(f"Old Price: {product['price_old']} EUR")
-        print(f"Specifications:")
-        for spec_name, spec_value in product['specifications'].items():
-            print(f"  {spec_name}: {spec_value}")
+        print(f"Year: {year}")
+        print(f"Mileage: {mileage}")
+        print(f"Gearbox: {gearbox}")
+        print(f"Fuel: {fuel}")
+        print(f"Engine: {engine}")
+        print(f"Power: {power}")
+        print(f"Color: {color}")
+        print(f"Traction: {traction}")
+        print(f"Body Type: {body_type}")
+        print(f"Seats: {seats}")
+        print(f"Consumption: {consumption}")
         print('-' * 40)
+
 
 else:
     print(f"Failed to retrieve the webpage. Status code: {response.status_code}")
