@@ -1,24 +1,21 @@
 import re
 from functools import reduce
 from bs4 import BeautifulSoup
-from Car import Car
-from Utils import Utils
-from Requester import Requester
-
-EUR_TO_MDL = 19.5
+from models.Car import Car
+from utils.Utils import Utils
+from utils.Requester import Requester
+from models.FilteredCars import FilteredCars
+from parsers.Serializer import Serializer
+from parsers.Deserializer import Deserializer
 
 url = "https://interauto.md/automobile/"
 host = "interauto.md"
 path = "/automobile/"
 
 requester = Requester()
-
-# Send HTTP request
 response_text = requester.send_http_request(host, path)
 headers, html_content = response_text.split("\r\n\r\n", 1)
-print(headers)
-print("--")
-# print(html_content)
+# print(headers)
 
 if "200 OK" in headers:
     soup = BeautifulSoup(html_content, 'html.parser')
@@ -98,16 +95,20 @@ if "200 OK" in headers:
     total_price = reduce(Utils.sum_prices, filtered_garage, 0)
     utc_timestamp = Utils.get_utc_timestamp()
 
-    data = {
-        "Filtered cars": filtered_garage,
-        "total_price": total_price,
-        "timestamp": utc_timestamp
-    }
+    dream_garage = FilteredCars(filtered_garage, total_price, utc_timestamp)
 
-    print(len(filtered_garage))
-
-    csv_file = 'cars.csv'
+    csv_file = 'resources/cars.csv'
     Utils.save_filtered_cars_to_csv(filtered_garage, csv_file)
 
+    json_data = Serializer.to_json(dream_garage)
+    print("\nJSON Representation:\n", json_data)
+
+    xml_data = Serializer.to_xml(dream_garage)
+    print("\nXML Representation:\n", xml_data)
+
+    temp_car = Deserializer.from_json(json_data, FilteredCars)
+    print(temp_car)
+    temp_car = Deserializer.from_xml(xml_data, FilteredCars)
+    print(temp_car)
 else:
     print("Failed to retrieve the webpage.")
