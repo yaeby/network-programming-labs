@@ -1,19 +1,27 @@
 import re
-import requests
+from functools import reduce
 from bs4 import BeautifulSoup
 from Car import Car
+from Utils import Utils
+from Requester import Requester
 
 EUR_TO_MDL = 19.5
 
-headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
-}
-
 url = "https://interauto.md/automobile/"
-response = requests.get(url, headers=headers)
+host = "interauto.md"
+path = "/automobile/"
 
-if response.status_code == 200:
-    soup = BeautifulSoup(response.text, 'html.parser')
+requester = Requester()
+
+# Send HTTP request
+response_text = requester.send_http_request(host, path)
+headers, html_content = response_text.split("\r\n\r\n", 1)
+print(headers)
+print("--")
+# print(html_content)
+
+if "200 OK" in headers:
+    soup = BeautifulSoup(html_content, 'html.parser')
     products_soup = soup.find_all('div', class_="col-md-6 col-lg-4")
 
     garage = []
@@ -27,48 +35,48 @@ if response.status_code == 200:
         link = link_tag['href'] if link_tag else 'No Link'
 
         price_new_tag = product_soup.find('span', class_='cardojo-Price-amount')
-        price = price_new_tag.get_text(strip=True).replace('€', '').strip() if price_new_tag else 'No Price'
+        price = int(price_new_tag.get_text(strip=True).replace('€', '').replace('.', '').strip()) if price_new_tag else None
 
         price_old_tag = product_soup.find('del')
-        price_old = price_old_tag.get_text(strip=True).replace('€', '').strip() if price_old_tag else 'No Old Price'
+        price_old = int(price_old_tag.get_text(strip=True).replace('€', '').replace('.', '').strip()) if price_old_tag else None
 
         if link != 'No Link':
-            product_page_response = requests.get(link, headers=headers)
+            product_page_response = requester.send_http_request(host, link)
 
-            if product_page_response.status_code == 200:
-                product_soup = BeautifulSoup(product_page_response.text, 'html.parser')
+            if "200 OK" in product_page_response:
+                product_soup = BeautifulSoup(product_page_response.split("\r\n\r\n", 1)[1], 'html.parser')
                 h2_tag = product_soup.find('h2', string='Caracteristici')
                 row_div = h2_tag.find_next_sibling('div', class_='row')
 
-                year_tag = row_div.find('i', class_='fas fa-calendar').find_next('h4')
-                year = year_tag.get_text(strip=True) if year_tag else 'No year'
+                year_tag = row_div.find('i', class_='fas fa-calendar')
+                year = year_tag.find_next('h4').get_text(strip=True) if year_tag else 'No year'
 
-                mileage_tag = row_div.find('i', class_='fas fa-tachometer-alt').find_next('h4')
-                mileage = mileage_tag.get_text(strip=True) if mileage_tag else 'No mialge'
+                mileage_tag = row_div.find('i', class_='fas fa-tachometer-alt')
+                mileage = mileage_tag.find_next('h4').get_text(strip=True) if mileage_tag else 'No mileage'
 
-                gearbox_tag = row_div.find('i', class_='fas fa-cogs').find_next('h4')
-                gearbox = gearbox_tag.get_text(strip=True) if gearbox_tag else 'No gearbox'
+                gearbox_tag = row_div.find('i', class_='fas fa-cogs')
+                gearbox = gearbox_tag.find_next('h4').get_text(strip=True) if gearbox_tag else 'No gearbox'
 
-                fuel_tag = row_div.find('i', class_='fas fa-bolt').find_next('h4')
-                fuel = fuel_tag.get_text(strip=True) if fuel_tag else 'No fuel'
+                fuel_tag = row_div.find('i', class_='fas fa-bolt')
+                fuel = fuel_tag.find_next('h4').get_text(strip=True) if fuel_tag else 'No fuel'
 
                 engine_tag = row_div.find('i', class_='fas fa-window-maximize')
                 engine = engine_tag.find_next('h4').get_text(strip=True) if engine_tag else 'No engine'
 
-                power_tag = row_div.find('i', class_='fas fa-horse-head').find_next('h4')
-                power = power_tag.get_text(strip=True) if power_tag else 'No power'
+                power_tag = row_div.find('i', class_='fas fa-horse-head')
+                power = power_tag.find_next('h4').get_text(strip=True) if power_tag else 'No power'
 
-                color_tag = row_div.find('div', class_='rounded-circle float-left car-color').find_next('h4')
-                color = color_tag.get_text(strip=True) if color_tag else 'No color'
+                color_tag = row_div.find('div', class_='rounded-circle float-left car-color')
+                color = color_tag.find_next('h4').get_text(strip=True) if color_tag else 'No color'
 
-                traction_tag = row_div.find('i', class_='fas fa-car-side').find_next('h4')
-                traction = traction_tag.get_text(strip=True) if traction_tag else 'No traction'
+                traction_tag = row_div.find('i', class_='fas fa-car-side')
+                traction = traction_tag.find_next('h4').get_text(strip=True) if traction_tag else 'No traction'
 
-                body_tag = row_div.find('i', class_='fas fa-car').find_next('h4')
-                body = body_tag.get_text(strip=True) if body_tag else 'No body'
+                body_tag = row_div.find('i', class_='fas fa-car')
+                body = body_tag.find_next('h4').get_text(strip=True) if body_tag else 'No body'
 
-                seats_tag = row_div.find('i', class_='fas fa-user-friends').find_next('h4')
-                seats = seats_tag.get_text(strip=True) if seats_tag else 'No seats'
+                seats_tag = row_div.find('i', class_='fas fa-user-friends')
+                seats = seats_tag.find_next('h4').get_text(strip=True) if seats_tag else 'No seats'
 
                 consumption_tag = row_div.find('ul', class_='list-unstyled mb-0').find_all('h4')
                 if consumption_tag:
@@ -78,18 +86,28 @@ if response.status_code == 200:
                     urban = re.sub(r'\s+', ' ', urban)
                     consumption = f'{extraurban}, {urban}'
                 else:
-                    consumption = 'No consumpion'
+                    consumption = 'No consumption'
 
             else:
-                print(f'Page not responding')
+                print('Page not responding')
             car = Car(name, link, price, price_old, year, mileage, gearbox, fuel, engine, power, color, traction, body, seats, consumption)
             garage.append(car)
 
-    for car in garage:
-        print(car)
-        print('-' * 40)
+    garage = list(map(Utils.convert_price_to_mdl, garage))
+    filtered_garage = list(filter(Utils.is_in_price_range, garage))
+    total_price = reduce(Utils.sum_prices, filtered_garage, 0)
+    utc_timestamp = Utils.get_utc_timestamp()
 
-    print(len(products_soup))
+    data = {
+        "Filtered cars": filtered_garage,
+        "total_price": total_price,
+        "timestamp": utc_timestamp
+    }
+
+    print(len(filtered_garage))
+
+    csv_file = 'cars.csv'
+    Utils.save_filtered_cars_to_csv(filtered_garage, csv_file)
 
 else:
-    print(f"Failed to retrieve the webpage. Status code: {response.status_code}")
+    print("Failed to retrieve the webpage.")
