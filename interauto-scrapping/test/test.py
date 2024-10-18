@@ -1,5 +1,6 @@
 import re
 import datetime
+import xmltodict
 from models.Car import Car
 from models.FilteredCars import FilteredCars
 
@@ -95,18 +96,25 @@ def from_json(json_str, cls):
     return obj
 
 def from_xml(xml_str, cls):
-    if not getattr(cls, '_serializable', False):
+    if cls is None:
+        return None
+
+    if not hasattr(cls, '__dict__'):
         raise ValueError(f"Class {cls.__name__} is not marked as serializable")
 
     obj = cls()
-    pattern = re.compile(r'<(\w+)>(.*?)</\1>')
-    matches = pattern.findall(xml_str)
-
-    for field_name, field_value in matches:
-        field = getattr(cls, field_name, None)
-        if field and getattr(field, '_serialize_field', False):
-            setattr(obj, field_name, parse_value(field_value, type(getattr(obj, field_name, str))))
+    xml_dict = xmltodict.parse(xml_str)
+    
+    for field_name, field_value in xml_dict[cls.__name__].items():
+        field = getattr(obj, field_name, None)
+        if field is not None:
+            field_type = type(field)
+            setattr(obj, field_name, from_xml(field_value, field_type))
+        else:
+            setattr(obj, field_name, field_value)
+    
     return obj
+
 
 def parse_value(value, expected_type):
     if expected_type == str:
@@ -119,25 +127,23 @@ def parse_value(value, expected_type):
         return value.lower() == 'true'
     return value
 
-# Example usage
 car = Car("Toyota Camry", "link1", 25000, 26000, 2020, 15000, "Automatic", "Petrol", "2.5L", 200, "Red", "AWD", "Sedan", 5, 8.0)
-car2 = Car("Toyota Corolla", "link1", 25000, 26000, 2020, 15000, "Automatic", "Petrol", "2.5L", 200, "Red", "AWD", "Sedan", 5, 8.0)
+car2 = Car("Toyota Corolla", "link2", 25000, 26000, 2020, 15000, "Mecanic", "Diesel", "3.5L", 200, "Blue", "AWD", "Sedan", 5, 8.0)
 
-# Serialize Car object to JSON and XML
 serialized_car_json = to_json(car)
 serialized_car_xml = to_xml(car)
 
 print("Serialized JSON:\n", serialized_car_json)
 print("\nSerialized XML:\n", serialized_car_xml)
 
-# print(from_json(serialized_car_json, Car))
-# print(from_xml(serialized_car_xml, Car))
+print(from_json(serialized_car_json, Car))
+print(from_xml(serialized_car_xml, Car))
 
 garage = []
 garage.append(car)
 garage.append(car2)
 
-filetered_cars = FilteredCars(garage, 10000, "20.30.40")
+filetered_cars = FilteredCars(garage, 1000000, "20.30.40")
 # for car in filetered_cars.cars:
 #     print(car)
 # print(filetered_cars)

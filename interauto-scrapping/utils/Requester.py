@@ -11,7 +11,7 @@ class Requester:
         with socket.create_connection((host, 443)) as sock:  
             with context.wrap_socket(sock, server_hostname=host) as ssock:  
 
-                request = f"GET {path} HTTP/1.1\r\nHost: {host}\r\nConnection: close\r\n\r\n"
+                request = f"GET {path} HTTP/1.1\r\nHost: {host}\r\nConnection: close\r\n\r\n" 
                 ssock.sendall(request.encode())
 
                 response = b""

@@ -1,5 +1,5 @@
 import re
-
+import xmltodict
 class Deserializer:
     @staticmethod
     def from_json(json_str, cls):
@@ -18,17 +18,23 @@ class Deserializer:
 
     @staticmethod
     def from_xml(xml_str, cls):
-        if not getattr(cls, '_serializable', False):
+        if cls is None:
+            return None
+
+        if not hasattr(cls, '__dict__'):
             raise ValueError(f"Class {cls.__name__} is not marked as serializable")
 
         obj = cls()
-        pattern = re.compile(r'<(\w+)>(.*?)</\1>')
-        matches = pattern.findall(xml_str)
-
-        for field_name, field_value in matches:
-            field = getattr(cls, field_name, None)
-            if field and getattr(field, '_serialize_field', False):
-                setattr(obj, field_name, Deserializer.parse_value(field_value, type(getattr(obj, field_name, str))))
+        xml_dict = xmltodict.parse(xml_str)
+        
+        for field_name, field_value in xml_dict[cls.__name__].items():
+            field = getattr(obj, field_name, None)
+            if field is not None:
+                field_type = type(field)
+                setattr(obj, field_name, Deserializer.from_xml(field_value, field_type))
+            else:
+                setattr(obj, field_name, field_value)
+        
         return obj
 
     @staticmethod
