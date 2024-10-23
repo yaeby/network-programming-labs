@@ -100,17 +100,16 @@ if "200 OK" in headers:
     csv_file = 'resources/cars.csv'
     Utils.save_filtered_cars_to_csv(filtered_garage, csv_file)
 
-    # json_data = Serializer.to_json(filtered_garage[0])
-    # print("\nJSON Representation:\n", json_data)
+    json_data = Serializer.to_json(dream_garage)
+    print("\nJSON Representation:\n", json_data)
 
-    # xml_data = Serializer.to_xml(filtered_garage[0])
-    # print("\nXML Representation:\n", xml_data)
+    xml_data = Serializer.to_xml(dream_garage)
+    print("\nXML Representation:\n", xml_data)
 
-    # temp_car = Deserializer.from_json(json_data, Car)
-    # print("\nCar from json:")
-    # print(temp_car)
-    # temp_car = Deserializer.from_xml(xml_data, Car)
-    # print("\nCar from xml:")
-    # print(temp_car)
+    temp_car = Deserializer.from_json(json_data, FilteredCars)
+    print(temp_car)
+    temp_car = Deserializer.from_xml(xml_data, FilteredCars)
+    print(temp_car)
+
 else:
     print("Failed to retrieve the webpage.")

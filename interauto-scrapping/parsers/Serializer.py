@@ -1,3 +1,5 @@
+import datetime
+
 class Serializer:
     @staticmethod
     def to_json(obj):
@@ -34,8 +36,18 @@ class Serializer:
         elif isinstance(value, (int, float, bool)):
             return str(value).lower()
         elif isinstance(value, list):
-            return "[" + ", ".join(Serializer._value_to_json(item) for item in value) + "]"
-        return f'"{str(value)}"'
+            return Serializer._list_to_json(value)
+        elif isinstance(value, datetime.datetime):
+            return f'"{value.isoformat()}"'
+        elif hasattr(value, '__dict__'):
+            return Serializer.to_json(value)
+        else:
+            return f'"{str(value)}"'
+        
+    @staticmethod
+    def _list_to_json(lst):
+        json_items = [Serializer._value_to_json(item) for item in lst]
+        return "[" + ", ".join(json_items) + "]"
 
     @staticmethod
     def _value_to_xml(field_name, value):
@@ -46,6 +58,10 @@ class Serializer:
             xml.append(Serializer._escape_xml_string(str(value)))
         elif isinstance(value, list):
             xml.append(Serializer._list_to_xml(value))
+        elif isinstance(value, datetime.datetime):
+            xml.append(Serializer._escape_xml_string(value.isoformat()))
+        elif hasattr(value, '__dict__'):
+            xml.append(Serializer.to_xml(value))
         xml.append(f"</{field_name}>")
         return "".join(xml)
 
