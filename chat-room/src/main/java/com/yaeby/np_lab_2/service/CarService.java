@@ -4,6 +4,8 @@ import com.yaeby.np_lab_2.exception.ResourceNotFoundException;
 import com.yaeby.np_lab_2.model.Car;
 import com.yaeby.np_lab_2.repository.CarRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,8 +16,8 @@ public class CarService implements ICarService {
     private final CarRepository carRepository;
 
     @Override
-    public List<Car> getCars() {
-        return carRepository.findAll();
+    public Page<Car> getCars(Pageable pageable) {
+        return carRepository.findAll(pageable);
     }
 
     @Override

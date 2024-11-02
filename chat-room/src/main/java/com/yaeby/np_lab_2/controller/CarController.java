@@ -5,8 +5,12 @@ import com.yaeby.np_lab_2.model.Car;
 import com.yaeby.np_lab_2.response.ApiResponse;
 import com.yaeby.np_lab_2.service.ICarService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -21,10 +25,13 @@ public class CarController {
     private final ICarService carService;
 
     @GetMapping("/all")
-    public ResponseEntity<ApiResponse> getAllCars() {
+    public ResponseEntity<ApiResponse> getAllCars(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         try {
-            List<Car> cars = carService.getCars();
-            return ResponseEntity.ok(new ApiResponse("Success", cars));
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Car> carsPage = carService.getCars(pageable);
+            return ResponseEntity.ok(new ApiResponse("Success", carsPage));
         } catch (Exception e) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
         }
