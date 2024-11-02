@@ -30,6 +30,11 @@ public class CarService implements ICarService {
     }
 
     @Override
+    public List<Car> addCars(List<Car> cars) {
+        return carRepository.saveAll(cars);
+    }
+
+    @Override
     public Car updateCar(Car car, Long id) {
         return carRepository.findById(id)
                 .map(existingCar -> updateExistingCar(existingCar, car))

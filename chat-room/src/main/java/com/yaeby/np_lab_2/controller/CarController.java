@@ -7,7 +7,6 @@ import com.yaeby.np_lab_2.service.ICarService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -20,19 +19,6 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class CarController {
 
     private final ICarService carService;
-
-//    @PostMapping("/multipart")
-//    public ResponseEntity<ApiResponse> uploadMultipart(
-//            @RequestParam("files") List<MultipartFile> files,
-//            @RequestParam("otherData") String otherData) {
-//        files.forEach(file -> {
-//            System.out.println("Uploaded file: " + file.getOriginalFilename());
-//        });
-//
-//        System.out.println("Other data: " + otherData);
-//
-//        return ResponseEntity.ok("Files uploaded successfully");
-//    }
 
     @GetMapping("/all")
     public ResponseEntity<ApiResponse> getAllCars() {
@@ -59,6 +45,16 @@ public class CarController {
         try {
             Car theCar = carService.addCar(car);
             return ResponseEntity.ok(new ApiResponse("Success", theCar));
+        } catch (Exception e) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @PostMapping("/cars/add")
+    public ResponseEntity<ApiResponse> addCars(@RequestBody List<Car> cars) {
+        try {
+            List<Car> theCars = carService.addCars(cars);
+            return ResponseEntity.ok(new ApiResponse("Success", theCars));
         } catch (Exception e) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
         }

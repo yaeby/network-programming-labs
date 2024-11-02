@@ -9,6 +9,8 @@ public interface ICarService {
     Car getCarById(Long id);
     Car addCar(Car car);
 
+    List<Car> addCars(List<Car> cars);
+
     Car updateCar(Car car, Long id);
 
     void deleteCar(Long id);
