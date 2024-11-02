@@ -1,6 +1,8 @@
 package com.yaeby.np_lab_2.controller;
 
+import com.yaeby.np_lab_2.exception.ResourceNotFoundException;
 import com.yaeby.np_lab_2.model.Car;
+import com.yaeby.np_lab_2.response.ApiResponse;
 import com.yaeby.np_lab_2.service.ICarService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +11,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+
 @RestController
 @RequestMapping("/interauto")
 @RequiredArgsConstructor
@@ -16,52 +21,66 @@ public class CarController {
 
     private final ICarService carService;
 
-    @PostMapping("/multipart")
-    public ResponseEntity<String> uploadMultipart(
-            @RequestParam("files") List<MultipartFile> files,
-            @RequestParam("otherData") String otherData) {
-        files.forEach(file -> {
-            System.out.println("Uploaded file: " + file.getOriginalFilename());
-        });
+//    @PostMapping("/multipart")
+//    public ResponseEntity<ApiResponse> uploadMultipart(
+//            @RequestParam("files") List<MultipartFile> files,
+//            @RequestParam("otherData") String otherData) {
+//        files.forEach(file -> {
+//            System.out.println("Uploaded file: " + file.getOriginalFilename());
+//        });
+//
+//        System.out.println("Other data: " + otherData);
+//
+//        return ResponseEntity.ok("Files uploaded successfully");
+//    }
 
-        System.out.println("Other data: " + otherData);
-
-        return ResponseEntity.ok("Files uploaded successfully");
-    }
-
-    @GetMapping("/cars/{}")
-    public List<Car> getAllCars() {
-        return carService.getCars();
-    }
-
-    @GetMapping("/cars/{id}")
-    public ResponseEntity<Car> getCarById(@PathVariable Long id) {
-        Car car = carService.getCarById(id);
-        return car != null ? ResponseEntity.ok(car) : ResponseEntity.notFound().build();
-    }
-
-    @PostMapping("/cars/add")
-    public ResponseEntity<Car> addCar(@RequestBody Car car) {
-        carService.addCar(car);
-        return ResponseEntity.ok(car);
-    }
-
-    @PutMapping("/cars/{id}/update")
-    public ResponseEntity<Car> updateCar(@RequestBody Car car, @PathVariable Long id) {
-        Car existingCar = carService.getCarById(id);
-        if (existingCar != null) {
-            carService.updateCar(car, id);
-            return ResponseEntity.ok(car);
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponse> getAllCars() {
+        try {
+            List<Car> cars = carService.getCars();
+            return ResponseEntity.ok(new ApiResponse("Success", cars));
+        } catch (Exception e) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
         }
-        return ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/cars/{id}/delete")
-    public ResponseEntity<Void> deleteCar(@PathVariable Long id) {
-        if (carService.getCarById(id) != null) {
+    @GetMapping("/car/{id}")
+    public ResponseEntity<ApiResponse> getCarById(@PathVariable Long id) {
+        try {
+            Car car = carService.getCarById(id);
+            return ResponseEntity.ok(new ApiResponse("Success", car));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @PostMapping("/car/add")
+    public ResponseEntity<ApiResponse> addCar(@RequestBody Car car) {
+        try {
+            Car theCar = carService.addCar(car);
+            return ResponseEntity.ok(new ApiResponse("Success", theCar));
+        } catch (Exception e) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @PutMapping("/car/{id}/update")
+    public ResponseEntity<ApiResponse> updateCar(@RequestBody Car car, @PathVariable Long id) {
+        try {
+            Car theCar = carService.updateCar(car, id);
+            return ResponseEntity.ok(new ApiResponse("Success", theCar));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        }
+    }
+
+    @DeleteMapping("/car/{id}/delete")
+    public ResponseEntity<ApiResponse> deleteCar(@PathVariable Long id) {
+        try {
             carService.deleteCar(id);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok(new ApiResponse("Success", id));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }
-        return ResponseEntity.notFound().build();
     }
 }

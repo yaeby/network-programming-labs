@@ -7,9 +7,9 @@ import java.util.List;
 public interface ICarService {
     List<Car> getCars();
     Car getCarById(Long id);
-    void addCar(Car car);
+    Car addCar(Car car);
 
-    void updateCar(Car car, Long id);
+    Car updateCar(Car car, Long id);
 
     void deleteCar(Long id);
 }
