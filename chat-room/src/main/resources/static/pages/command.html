@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Race Control and Dead Lock</title>
+    <link rel="stylesheet" href="/css/chat.css">
+</head>
+<body>
+<input type="text" id="message" placeholder="Enter 'write some text' or 'read'" />
+<button onclick="sendMessage()">Send</button>
+<pre id="output"></pre>
+
+<script>
+    const socket = new WebSocket("ws://localhost:8080/socket");
+
+    socket.onmessage = function(event) {
+        document.getElementById("output").textContent += event.data + "\n";
+    };
+
+    function sendMessage() {
+        const message = document.getElementById("message").value;
+        socket.send(message);
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Interauto</title>
+    <link rel="stylesheet" href="/css/chat.css">
+    <link rel="stylesheet" href="/css/cars.css">
+</head>
+<body>
+<h1>Welcome to Interauto (scraped)</h1>
+<div class="container">
+    <div class="card">
+        <div class="header-container">
+            <h2>Available Cars</h2>
+            <button id="add-car-btn">Add Car</button>
+        </div>
+        <table id="product-table">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Year</th>
+                <th>Mileage</th>
+                <th>Gearbox</th>
+                <th>Fuel</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Products will be dynamically added here -->
+            </tbody>
+        </table>
+        <div class="pagination">
+            <button id="prev-page" class="button">Previous</button>
+            <span id="current-page">1</span>
+            <button id="next-page" class="button">Next</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Car Modal -->
+<div id="add-car-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Add New Car</h2>
+        <form id="add-car-form">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="price">Price:</label>
+                <input type="number" id="price" name="price" required>
+            </div>
+            <div class="form-group">
+                <label for="year">Year:</label>
+                <input type="number" id="year" name="year" required min="1900" max="2024">
+            </div>
+            <div class="form-group">
+                <label for="mileage">Mileage:</label>
+                <input type="text" id="mileage" name="mileage" required>
+            </div>
+            <div class="form-group">
+                <label for="gearbox">Gearbox:</label>
+                <select id="gearbox" name="gearbox" required>
+                    <option value="Manual">Manual</option>
+                    <option value="Automatic">Automatic</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="fuel">Fuel:</label>
+                <select id="fuel" name="fuel" required>
+                    <option value="Petrol">Petrol</option>
+                    <option value="Diesel">Diesel</option>
+                    <option value="Electric">Electric</option>
+                    <option value="Hybrid">Hybrid</option>
+                </select>
+            </div>
+            <button type="submit" class="button">Add Car</button>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="delete-modal" class="modal">
+    <div class="modal-content" style="max-width: 400px;">
+        <h2>Confirm Delete</h2>
+        <p>Are you sure you want to delete this car?</p>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+            <button id="cancel-delete" class="button">Cancel</button>
+            <button id="confirm-delete" class="button" style="background-color: #ff4444;">Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Car Modal -->
+<div id="edit-car-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Edit Car</h2>
+        <form id="edit-car-form">
+            <input type="hidden" id="edit-car-id">
+            <div class="form-group">
+                <label for="edit-name">Name:</label>
+                <input type="text" id="edit-name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-price">Price:</label>
+                <input type="text" id="edit-price" name="price" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-year">Year:</label>
+                <input type="number" id="edit-year" name="year" required min="1900" max="2024">
+            </div>
+            <div class="form-group">
+                <label for="edit-mileage">Mileage:</label>
+                <input type="text" id="edit-mileage" name="mileage" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-gearbox">Gearbox:</label>
+                <select id="edit-gearbox" name="gearbox" required>
+                    <option value="Manual">Manual</option>
+                    <option value="Automatic">Automatic</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="edit-fuel">Fuel:</label>
+                <select id="edit-fuel" name="fuel" required>
+                    <option value="Petrol">Petrol</option>
+                    <option value="Diesel">Diesel</option>
+                    <option value="Electric">Electric</option>
+                    <option value="hybrid">Hybrid</option>
+                </select>
+            </div>
+            <button type="submit" class="button">Update Car</button>
+        </form>
+    </div>
+</div>
+
+<script src="/js/cars.js"></script>
+</body>
+</html>
