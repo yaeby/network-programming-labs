@@ -42,9 +42,9 @@ public class CommandWebSocketHandler extends TextWebSocketHandler {
     private void processQueue() {
         while (true) {
             try {
-                Command task = commandQueue.take();
-                System.out.println("Processing " + task.getCommandType() + " command");
-                task.run();
+                Command command = commandQueue.take();
+                System.out.println("Processing " + command.getCommandType() + " command");
+                command.run();
                 Thread.sleep(50);
 
             } catch (InterruptedException e) {
