@@ -8,15 +8,14 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class CommandWebSocketHandler extends TextWebSocketHandler {
+    private static final String FILE_PATH = "src/output/data.txt";
     private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-    private static final String FILE_PATH = "data.txt";
     private final PriorityBlockingQueue<Command> commandQueue = new PriorityBlockingQueue<>();
 
     public CommandWebSocketHandler() {
@@ -27,16 +26,14 @@ public class CommandWebSocketHandler extends TextWebSocketHandler {
     public void handleTextMessage(WebSocketSession session, TextMessage message) {
 
         String payload = message.getPayload();
-        System.out.println("Received: " + payload);
+        System.out.println("Client command: " + payload);
 
-        if (payload.startsWith("write ") || payload.startsWith("writeline ")) {
-            System.out.println("Adding write command to the queue");
+        if (payload.startsWith("write: ")) {
+            System.out.println("Read command pushed to execution queue");
             commandQueue.add(new Command(() -> processMessage(payload, session), CommandType.WRITE));
-        } else if (payload.startsWith("read") || payload.startsWith("readline ")) {
-            System.out.println("Adding read command to the queue");
+        } else if (payload.startsWith("read")) {
+            System.out.println("Write command pushed to execution queue");
             commandQueue.add(new Command(() -> processMessage(payload, session), CommandType.READ));
-        } else if (payload.equalsIgnoreCase("delete")) {
-            commandQueue.add(new Command(() -> processMessage(payload, session), CommandType.WRITE));
         } else {
             sendMessage(session, "Unknown command");
         }
@@ -48,7 +45,7 @@ public class CommandWebSocketHandler extends TextWebSocketHandler {
                 Command task = commandQueue.take();
                 System.out.println("Processing " + task.getCommandType() + " command");
                 task.run();
-                Thread.sleep(50); // Optional delay to let tasks accumulate
+                Thread.sleep(50);
 
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -59,10 +56,10 @@ public class CommandWebSocketHandler extends TextWebSocketHandler {
     }
 
     private void processMessage(String message, WebSocketSession session) {
-        if (message.startsWith("write ")) {
-            String data = message.substring("write".length()).trim();
+        if (message.startsWith("write: ")) {
+            String data = message.substring(message.indexOf("write: ") + 7);
             if (data.isEmpty()) {
-                sendMessage(session, "Error: No data provided for write command");
+                sendMessage(session, "Empty data");
             } else {
                 writeFile(data).thenRun(() -> sendMessage(session, "Write operation completed"));
             }
@@ -113,7 +110,7 @@ public class CommandWebSocketHandler extends TextWebSocketHandler {
 
     private void simulateRandomDelay() {
         try {
-            int sleepTime = 1000 + new Random().nextInt(4000);
+            int sleepTime = 3000 + new Random().nextInt(10000);
             Thread.sleep(sleepTime);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
