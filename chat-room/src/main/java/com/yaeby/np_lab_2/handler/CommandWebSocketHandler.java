@@ -29,10 +29,10 @@ public class CommandWebSocketHandler extends TextWebSocketHandler {
         System.out.println("Client command: " + payload);
 
         if (payload.startsWith("write: ")) {
-            System.out.println("Read command pushed to execution queue");
+            System.out.println("Write command pushed to execution queue");
             commandQueue.add(new Command(() -> processMessage(payload, session), CommandType.WRITE));
         } else if (payload.startsWith("read")) {
-            System.out.println("Write command pushed to execution queue");
+            System.out.println("Read command pushed to execution queue");
             commandQueue.add(new Command(() -> processMessage(payload, session), CommandType.READ));
         } else {
             sendMessage(session, "Unknown command");

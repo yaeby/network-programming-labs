@@ -1,1 +1,1 @@
-data new hello world
+123
