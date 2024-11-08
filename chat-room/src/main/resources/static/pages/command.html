@@ -3,24 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <title>Race Control and Dead Lock</title>
-    <link rel="stylesheet" href="/css/chat.css">
+    <link rel="stylesheet" href="/css/cmd.css">
+</head>
 </head>
 <body>
-<input type="text" id="message" placeholder="Enter 'write some text' or 'read'" />
-<button onclick="sendMessage()">Send</button>
-<pre id="output"></pre>
+<div class="container">
+    <h1>WebSocket Command Sender</h1>
+    <form action="/sendCommand" method="POST">
+        <label for="command">Enter Command:</label>
+        <input type="text" id="command" name="command" placeholder="READ, WRITE 1 data, etc." required>
+        <button type="submit">Send Command</button>
+    </form>
+
+    <h2>Response:</h2>
+    <div id="response">
+        <!-- The server response will be displayed here -->
+    </div>
+</div>
 
 <script>
-    const socket = new WebSocket("ws://localhost:8080/socket");
+    const socket = new WebSocket("ws://localhost:8080/cmd");
 
-    socket.onmessage = function(event) {
-        document.getElementById("output").textContent += event.data + "\n";
-    };
+    // Listen for the WebSocket connection opening
+    socket.addEventListener("open", function (event) {
+        console.log("WebSocket connection opened");
+    });
 
-    function sendMessage() {
-        const message = document.getElementById("message").value;
-        socket.send(message);
-    }
+    // Listen for messages from the server
+    socket.addEventListener("message", function (event) {
+        console.log("Message from server:", event.data);
+        document.getElementById("response").innerText = event.data;
+    });
+
+    // Handle form submission and send the command via WebSocket
+    const form = document.querySelector("form");
+    form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const command = document.getElementById("command").value;
+
+        // Send the command through the WebSocket
+        if (socket.readyState === WebSocket.OPEN) {
+            socket.send(command);
+        } else {
+            console.error("WebSocket connection is not open");
+        }
+    });
+
+    // Optional: Listen for the WebSocket connection closing
+    socket.addEventListener("close", function (event) {
+        console.log("WebSocket connection closed");
+    });
+
+    // Optional: Handle WebSocket errors
+    socket.addEventListener("error", function (event) {
+        console.error("WebSocket error:", event);
+    });
 </script>
 </body>
 </html>
