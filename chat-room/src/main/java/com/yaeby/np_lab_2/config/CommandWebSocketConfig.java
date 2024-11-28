@@ -1,7 +1,6 @@
 package com.yaeby.np_lab_2.config;
 
 import com.yaeby.np_lab_2.handler.CommandWebSocketHandler;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;

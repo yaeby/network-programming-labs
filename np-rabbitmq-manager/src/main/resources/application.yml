@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: np-rabbitmq-manager
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+rabbitmq:
+  queue:
+    name: scraper_queue
+  exchange:
+    name: scraper_exchange
+  routing:
+    key: scraper_routing_json_key
+
+server:
+  port: 8081
