@@ -2,9 +2,11 @@ package com.yaeby.spring_rabbitmq_test.fpt;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
+import org.springframework.stereotype.Service;
 
 import java.io.FileOutputStream;
 
+@Service
 public class FTPClientService {
 
     private static final String FTP_HOST = "localhost";

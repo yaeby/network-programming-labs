@@ -66,6 +66,8 @@ public class Sender {
                     ApiResponse.class);
 
             LOGGER.info("Response from LAB2: Status Code = {}, Body = {}", response.getStatusCode(), response.getBody());
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            LOGGER.error("HTTP error sending file to endpoint: {}", e.getResponseBodyAsString(), e);
         } catch (Exception e) {
             LOGGER.error("Error sending multipart file", e);
         }

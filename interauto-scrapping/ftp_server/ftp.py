@@ -6,7 +6,7 @@ def upload_to_ftp(file_path, ftp_host, ftp_user, ftp_pass):
     
     with open(file_path, "rb") as file:
         ftp.storbinary(f"STOR data.json", file)
-        print(f"File {file_path} was successfully uploaded.")
+        print(f"File was successfully stored.")
     
     ftp.quit()
 

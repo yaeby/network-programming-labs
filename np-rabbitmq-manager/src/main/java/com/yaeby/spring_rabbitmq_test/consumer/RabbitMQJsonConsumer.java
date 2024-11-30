@@ -19,6 +19,6 @@ public class RabbitMQJsonConsumer {
     public void consume(Car car) {
         LOGGER.info(String.format("Received message: %s", car.toString()));
 
-//        sender.sendAddCarPostRequest(car);
+        sender.sendAddCarPostRequest(car);
     }
 }
