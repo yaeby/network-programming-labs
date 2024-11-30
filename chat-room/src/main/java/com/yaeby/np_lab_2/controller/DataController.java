@@ -21,17 +21,11 @@ public class DataController {
     @PostMapping("/upload")
     public ResponseEntity<ApiResponse> upload(@RequestParam List<MultipartFile> files) {
         try {
-            List<Map<String, String>> fileDataList = new ArrayList<>();
-            for (MultipartFile file : files) {
-                Map<String, String> fileData = new HashMap<>();
-                fileData.put("filename", file.getOriginalFilename());
-
-                String base64Image = Base64.getEncoder().encodeToString(file.getBytes());
-                fileData.put("imageData", base64Image);
-
-                fileDataList.add(fileData);
+            List<String> fileDataList = new ArrayList<>();
+            for(MultipartFile file : files) {
+                fileDataList.add(file.getOriginalFilename());
             }
-            return ResponseEntity.ok(new ApiResponse("Success", fileDataList));
+            return ResponseEntity.ok(new ApiResponse("Success: ", fileDataList));
         } catch (Exception e) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("e.getMessage()", e.getMessage()));
         }
