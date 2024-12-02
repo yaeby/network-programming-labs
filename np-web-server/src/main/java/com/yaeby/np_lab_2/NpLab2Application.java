@@ -9,5 +9,4 @@ public class NpLab2Application {
 	public static void main(String[] args) {
 		SpringApplication.run(NpLab2Application.class, args);
 	}
-
 }

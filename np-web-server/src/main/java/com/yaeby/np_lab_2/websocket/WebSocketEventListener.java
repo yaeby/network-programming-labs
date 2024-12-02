@@ -1,4 +1,4 @@
-package com.yaeby.np_lab_2.config;
+package com.yaeby.np_lab_2.websocket;
 
 import com.yaeby.np_lab_2.model.ChatMessage;
 import com.yaeby.np_lab_2.model.MessageType;
