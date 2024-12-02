@@ -1,5 +1,6 @@
 package com.yaeby.spring_rabbitmq_test.publisher;
 
+import com.yaeby.spring_rabbitmq_test.config.AppConfig;
 import com.yaeby.spring_rabbitmq_test.dto.Car;
 import com.yaeby.spring_rabbitmq_test.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +23,10 @@ public class Sender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Sender.class);
     private final RestTemplate restTemplate;
+    private final AppConfig appConfig;
 
     public void sendAddCarPostRequest(Car car) {
-        String url = "http://localhost:8080/interauto/car/add";
+        String url = appConfig.getBaseUrl() + "/interauto/car/add";
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -50,7 +52,7 @@ public class Sender {
 
     public void sendMultipartFileRequest(File file) {
         try {
-            String url = "http://localhost:8080/data/upload";
+            String url = appConfig.getBaseUrl() + "/data/upload";
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);

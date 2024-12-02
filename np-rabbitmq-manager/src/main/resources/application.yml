@@ -15,4 +15,10 @@ rabbitmq:
     key: scraper_routing_json_key
 
 server:
-  port: 8081
+  port: 9090
+
+np-web-server:
+  host: localhost
+  port: 8080
+  protocol: http
+  base-url: ${np-web-server.protocol}://${np-web-server.host}:${np-web-server.port}

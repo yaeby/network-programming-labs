@@ -2,6 +2,7 @@ package com.yaeby.np_lab_2.udp;
 
 import com.yaeby.np_lab_2.config.UdpConfig;
 import com.yaeby.np_lab_2.model.RaftState;
+import com.yaeby.np_lab_2.service.LeaderSender;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class RaftLeaderElectionService {
 
     private static final Logger logger = LoggerFactory.getLogger(RaftLeaderElectionService.class);
+    private final LeaderSender sender;
     private final UdpConfig udpConfig;
 
     private static final int ELECTION_TIMEOUT = 10000;
@@ -183,6 +185,7 @@ public class RaftLeaderElectionService {
 
         startHeartbeatThread();
         broadcastMessage(LEADER_ANNOUNCEMENT);
+        sender.sendNewLeader();
     }
 
     private void handleLeaderAnnouncement(int leaderId) {
