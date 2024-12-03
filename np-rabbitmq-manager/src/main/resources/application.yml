@@ -6,6 +6,15 @@ spring:
     port: 5672
     username: guest
     password: guest
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
 rabbitmq:
   queue:
     name: scraper_queue
