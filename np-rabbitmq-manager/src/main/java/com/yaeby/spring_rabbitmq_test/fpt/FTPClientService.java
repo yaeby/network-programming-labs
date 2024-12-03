@@ -2,6 +2,7 @@ package com.yaeby.spring_rabbitmq_test.fpt;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.FileOutputStream;
@@ -9,10 +10,17 @@ import java.io.FileOutputStream;
 @Service
 public class FTPClientService {
 
-    private static final String FTP_HOST = "localhost";
-    private static final int FTP_PORT = 21;
-    private static final String FTP_USER = "testuser";
-    private static final String FTP_PASS = "testpass";
+    @Value("${ftp.host}")
+    private String FTP_HOST ;
+
+    @Value("${ftp.port}")
+    private int FTP_PORT;
+
+    @Value("${ftp.user}")
+    private String FTP_USER;
+
+    @Value("${ftp.password}")
+    private String FTP_PASS;
 
     public void downloadFile(String remoteFilePath, String localFilePath) {
         FTPClient ftpClient = new FTPClient();

@@ -31,3 +31,9 @@ np-web-server:
   port: 8080
   protocol: http
   base-url: ${np-web-server.protocol}://${np-web-server.host}:${np-web-server.port}
+
+ftp:
+  host: localhost
+  port: 21
+  user: testuser
+  password: testpass

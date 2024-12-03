@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "9090:9090"
+    environment:
+      - EMAIL_USERNAME=${EMAIL_USERNAME}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - SPRING_RABBITMQ_HOST=host.docker.internal
+      - SPRING_MAIL_HOST=smtp.gmail.com
+      - SPRING_MAIL_PORT=587
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    network_mode: "host"

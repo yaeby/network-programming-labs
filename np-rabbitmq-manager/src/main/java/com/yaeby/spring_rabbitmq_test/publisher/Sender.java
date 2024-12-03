@@ -39,21 +39,20 @@ public class Sender {
             );
 
             if (response.getStatusCode().is2xxSuccessful()) {
-                LOGGER.info("POST request sent successfully: {}", response.getBody());
+                LOGGER.info("Response from Server: {}", response.getBody());
             } else {
                 LOGGER.error("Failed to send POST request: {}", response.getBody());
             }
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             LOGGER.error("HTTP error sending car to endpoint: {}", e.getResponseBodyAsString(), e);
         } catch (Exception e) {
-            LOGGER.error("Unexpected error sending car to endpoint", e);
+            LOGGER.error("Error sending car to endpoint: {}", url);
         }
     }
 
     public void sendMultipartFileRequest(File file) {
+        String url = appConfig.getBaseUrl() + "/data/upload";
         try {
-            String url = appConfig.getBaseUrl() + "/data/upload";
-
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
@@ -65,13 +64,19 @@ public class Sender {
             ResponseEntity<ApiResponse> response = restTemplate.postForEntity(
                     url,
                     requestEntity,
-                    ApiResponse.class);
+                    ApiResponse.class
+            );
 
-            LOGGER.info("Response from LAB2: Status Code = {}, Body = {}", response.getStatusCode(), response.getBody());
+            if (response.getStatusCode().is2xxSuccessful()) {
+                LOGGER.info("Response from Server: Status Code = {}, Body = {}", response.getStatusCode(), response.getBody());
+            } else {
+                LOGGER.error("Failed to send Multipart File request: Status Code = {}, Body = {}", response.getStatusCode(), response.getBody());
+            }
+
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             LOGGER.error("HTTP error sending file to endpoint: {}", e.getResponseBodyAsString(), e);
         } catch (Exception e) {
-            LOGGER.error("Error sending multipart file", e);
+            LOGGER.error("Error sending multipart file to endpoint {}", url);
         }
     }
 }
