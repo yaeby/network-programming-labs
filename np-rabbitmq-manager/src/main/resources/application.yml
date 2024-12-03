@@ -2,13 +2,13 @@ spring:
   application:
     name: np-rabbitmq-manager
   rabbitmq:
-    host: localhost
+    host: ${SPRING_RABBITMQ_HOST:localhost}
     port: 5672
     username: guest
     password: guest
   mail:
-    host: smtp.gmail.com
-    port: 587
+    host: ${SPRING_MAIL_HOST:smtp.gmail.com}
+    port: ${SPRING_MAIL_PORT:587}
     username: ${EMAIL_USERNAME}
     password: ${EMAIL_PASSWORD}
     properties:
@@ -24,16 +24,17 @@ rabbitmq:
     key: scraper_routing_json_key
 
 server:
+  address: 0.0.0.0
   port: 9090
 
 np-web-server:
-  host: localhost
+  host: ${NP_WEB_SERVER_HOST:localhost}
   port: 8080
   protocol: http
   base-url: ${np-web-server.protocol}://${np-web-server.host}:${np-web-server.port}
 
 ftp:
-  host: localhost
+  host: ${FTP_HOST:localhost}
   port: 21
   user: testuser
   password: testpass

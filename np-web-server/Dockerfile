@@ -1,4 +1,3 @@
-# Build stage
 FROM maven:3.9.6-amazoncorretto-21 AS build
 WORKDIR /app
 COPY pom.xml .

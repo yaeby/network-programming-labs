@@ -23,7 +23,7 @@ public class RabbitMQJsonProducer {
     private final RabbitTemplate rabbitTemplate;
 
     public void sendJsonMessage(Car car) {
-        LOGGER.info("Sending Json Message: {}", car.toString());
+        LOGGER.info("Sending message to exchange: {}", car.toString());
         rabbitTemplate.convertAndSend(exchange, routingJsonKey, car);
     }
 }

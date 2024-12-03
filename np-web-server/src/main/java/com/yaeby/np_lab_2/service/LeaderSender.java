@@ -1,11 +1,13 @@
 package com.yaeby.np_lab_2.service;
 
+import com.yaeby.np_lab_2.config.AppConfig;
 import com.yaeby.np_lab_2.config.UdpConfig;
 import com.yaeby.np_lab_2.model.RaftLeader;
 import com.yaeby.np_lab_2.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -19,16 +21,21 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class LeaderSender {
 
+    @Value("${manager.server.url}")
+    private String managerServerUrl;
+
+    @Value("${server.port}")
+    private int serverPort;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(LeaderSender.class);
     private final RestTemplate restTemplate;
-    private final UdpConfig udpConfig;
 
     public void sendNewLeader() {
-        String url = "http://localhost:9090/raft/leader";
+        String url = managerServerUrl + "/raft/leader";
         try {
             RaftLeader leaderUpdate = new RaftLeader(
                     "localhost",
-                    udpConfig.getServerPort()
+                    serverPort
             );
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -39,14 +46,14 @@ public class LeaderSender {
                     ApiResponse.class
             );
             if (response.getStatusCode().is2xxSuccessful()) {
-                LOGGER.info("POST request sent successfully: {}", response.getBody());
+                LOGGER.info("POST request sent successfully: {} from {}", response.getBody(), serverPort);
             } else {
                 LOGGER.error("Failed to send POST request: {}", response.getBody());
             }
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             LOGGER.error("HTTP error sending car to endpoint: {}", e.getResponseBodyAsString(), e);
         } catch (Exception e) {
-            LOGGER.error("Unexpected error sending car to endpoint", e);
+            LOGGER.error("Error announcing the new leader to Manager Server: {}", e.getMessage());
         }
     }
 }

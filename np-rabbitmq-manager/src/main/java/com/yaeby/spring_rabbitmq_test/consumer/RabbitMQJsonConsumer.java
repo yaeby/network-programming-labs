@@ -17,7 +17,7 @@ public class RabbitMQJsonConsumer {
 
     @RabbitListener(queues = {"${rabbitmq.queue.name}"})
     public void consume(Car car) {
-        LOGGER.info(String.format("Received message: %s", car.toString()));
+        LOGGER.info(String.format("Received message from rabbitmq queue: %s", car.toString()));
 
         sender.sendAddCarPostRequest(car);
     }

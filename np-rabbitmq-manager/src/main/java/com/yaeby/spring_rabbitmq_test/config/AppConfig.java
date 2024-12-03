@@ -12,15 +12,6 @@ import org.springframework.web.client.RestTemplate;
 @Setter
 public class AppConfig {
 
-    @Value("${np-web-server.host}")
-    private String host;
-
-    @Value("${np-web-server.port}")
-    private int port;
-
-    @Value("${np-web-server.base-url}")
-    private String baseUrl;
-
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();

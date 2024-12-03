@@ -1,9 +1,12 @@
 package com.yaeby.spring_rabbitmq_test.controller;
 
 import com.yaeby.spring_rabbitmq_test.config.AppConfig;
+import com.yaeby.spring_rabbitmq_test.config.RaftLeaderConfig;
 import com.yaeby.spring_rabbitmq_test.dto.RaftLeader;
 import com.yaeby.spring_rabbitmq_test.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,12 +18,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class RaftLeaderController {
 
-    private final AppConfig appConfig;
+    private static final Logger LOGGER = LoggerFactory.getLogger(RaftLeaderController.class);
+    private final RaftLeaderConfig raftLeaderConfig;
 
     @PostMapping("/leader")
     public ResponseEntity<ApiResponse> updateLeader(@RequestBody RaftLeader leader) {
-        appConfig.setHost(leader.getHost());
-        appConfig.setPort(leader.getPort());
-        return ResponseEntity.ok(new ApiResponse("New leader set successful", null));
+        raftLeaderConfig.setHost(leader.getHost());
+        raftLeaderConfig.setPort(leader.getPort());
+        raftLeaderConfig.updateBaseUrl();
+        LOGGER.info("New leader updated {}", leader.getPort());
+        return ResponseEntity.ok(new ApiResponse("New leader set successful by Manager Server", raftLeaderConfig.getBaseUrl()));
     }
 }

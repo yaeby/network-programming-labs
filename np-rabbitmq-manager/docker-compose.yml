@@ -10,6 +10,7 @@ services:
       - SPRING_RABBITMQ_HOST=host.docker.internal
       - SPRING_MAIL_HOST=smtp.gmail.com
       - SPRING_MAIL_PORT=587
+      - FTP_HOST=host.docker.internal
+      - NP_WEB_SERVER_HOST=host.docker.internal
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    network_mode: "host"

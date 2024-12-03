@@ -1,6 +1,6 @@
 package com.yaeby.spring_rabbitmq_test.publisher;
 
-import com.yaeby.spring_rabbitmq_test.config.AppConfig;
+import com.yaeby.spring_rabbitmq_test.config.RaftLeaderConfig;
 import com.yaeby.spring_rabbitmq_test.dto.Car;
 import com.yaeby.spring_rabbitmq_test.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +23,10 @@ public class Sender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Sender.class);
     private final RestTemplate restTemplate;
-    private final AppConfig appConfig;
+    private final RaftLeaderConfig raftLeaderConfig;
 
     public void sendAddCarPostRequest(Car car) {
-        String url = appConfig.getBaseUrl() + "/interauto/car/add";
+        String url = raftLeaderConfig.getBaseUrl() + "/interauto/car/add";
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -39,7 +39,7 @@ public class Sender {
             );
 
             if (response.getStatusCode().is2xxSuccessful()) {
-                LOGGER.info("Response from Server: {}", response.getBody());
+                LOGGER.info("Response from leader server {}: {}", raftLeaderConfig.getPort(), response.getBody());
             } else {
                 LOGGER.error("Failed to send POST request: {}", response.getBody());
             }
@@ -51,7 +51,7 @@ public class Sender {
     }
 
     public void sendMultipartFileRequest(File file) {
-        String url = appConfig.getBaseUrl() + "/data/upload";
+        String url = raftLeaderConfig.getBaseUrl() + "/data/upload";
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -68,7 +68,7 @@ public class Sender {
             );
 
             if (response.getStatusCode().is2xxSuccessful()) {
-                LOGGER.info("Response from Server: Status Code = {}, Body = {}", response.getStatusCode(), response.getBody());
+                LOGGER.info("Response from leader server {}: Status Code = {}, Body = {}", raftLeaderConfig.getPort(), response.getStatusCode(), response.getBody());
             } else {
                 LOGGER.error("Failed to send Multipart File request: Status Code = {}, Body = {}", response.getStatusCode(), response.getBody());
             }
