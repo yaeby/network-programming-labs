@@ -21,10 +21,10 @@ public class ScheduledFTPTask {
     public void fetchAndUploadFile() {
         ftpClientService.downloadFile("data.json", LOCAL_FILE_PATH);
         sender.sendMultipartFileRequest(new File(LOCAL_FILE_PATH));
-//        emailSenderService.sendSimpleEmail(
-//                "jana09sokolova@gmail.com",
-//                "FTP server",
-//                "Data from the ftp server has been fetched successfully"
-//        );
+        emailSenderService.sendSimpleEmail(
+                "jana09sokolova@gmail.com",
+                "FTP server",
+                "Data from the ftp server has been fetched successfully"
+        );
     }
 }

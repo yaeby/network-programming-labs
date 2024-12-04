@@ -53,9 +53,11 @@ if "200 OK" in headers:
 
                 gearbox_tag = row_div.find('i', class_='fas fa-cogs')
                 gearbox = gearbox_tag.find_next('h4').get_text(strip=True) if gearbox_tag else 'No gearbox'
+                gearbox = Utils.replace_romanian_letters(gearbox)
 
                 fuel_tag = row_div.find('i', class_='fas fa-bolt')
                 fuel = fuel_tag.find_next('h4').get_text(strip=True) if fuel_tag else 'No fuel'
+                fuel = Utils.replace_romanian_letters(fuel)
 
                 engine_tag = row_div.find('i', class_='fas fa-window-maximize')
                 engine = engine_tag.find_next('h4').get_text(strip=True) if engine_tag else 'No engine'
@@ -65,12 +67,15 @@ if "200 OK" in headers:
 
                 color_tag = row_div.find('div', class_='rounded-circle float-left car-color')
                 color = color_tag.find_next('h4').get_text(strip=True) if color_tag else 'No color'
+                color = Utils.replace_romanian_letters(color)
 
                 traction_tag = row_div.find('i', class_='fas fa-car-side')
                 traction = traction_tag.find_next('h4').get_text(strip=True) if traction_tag else 'No traction'
+                traction = Utils.replace_romanian_letters(traction)
 
                 body_tag = row_div.find('i', class_='fas fa-car')
                 body = body_tag.find_next('h4').get_text(strip=True) if body_tag else 'No body'
+                body = Utils.replace_romanian_letters(body)
 
                 seats_tag = row_div.find('i', class_='fas fa-user-friends')
                 seats = seats_tag.find_next('h4').get_text(strip=True) if seats_tag else 'No seats'
@@ -95,18 +100,20 @@ if "200 OK" in headers:
     total_price = reduce(Utils.sum_prices, filtered_garage, 0)
     utc_timestamp = Utils.get_utc_timestamp()
 
+    csv_file = 'resources/cars.csv'
+    Utils.save_filtered_cars_to_csv(filtered_garage, csv_file)
+
     dream_garage = FilteredCars(filtered_garage, total_price, utc_timestamp)
 
     csv_file = 'resources/cars.csv'
     Utils.save_filtered_cars_to_csv(filtered_garage, csv_file)
 
     json_data = Serializer.to_json(dream_garage)
-    print("\nJSON Representation:\n", json_data)
 
     with open('resources/data.json', 'w', encoding='utf-8') as f:
         f.write(json_data)
 
-    print("JSON data saved to data.json")
+    # print("\nJSON Representation:\n", json_data)
 
     # xml_data = Serializer.to_xml(dream_garage)
     # print("\nXML Representation:\n", xml_data)

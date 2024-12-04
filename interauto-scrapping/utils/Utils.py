@@ -49,3 +49,18 @@ class Utils:
                     ])
 
         print(f"Data written to {csv_file} successfully.")
+
+    @staticmethod
+    def replace_romanian_letters(text):
+        """Replaces Romanian letters with English letters."""
+        replacements = {
+            'ă': 'a', 'â': 'a', 'î': 'i', 'ș': 's', 'ț': 't',
+            'Ă': 'A', 'Â': 'A', 'Î': 'I', 'Ș': 'S', 'Ț': 'T'
+        }
+        for romanian_char, english_char in replacements.items():
+            text = text.replace(romanian_char, english_char)
+        return text
+
+    # Example usage
+    example_text = "șoferul a condus mașina în oraș"
+    print(replace_romanian_letters(example_text))
