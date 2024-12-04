@@ -19,6 +19,9 @@ public class RaftLeaderConfig {
     @Value("${np-web-server.port}")
     private int port;
 
+    @Value("${np-web-server.node}")
+    private int node;
+
     private String baseUrl;
 
     @PostConstruct

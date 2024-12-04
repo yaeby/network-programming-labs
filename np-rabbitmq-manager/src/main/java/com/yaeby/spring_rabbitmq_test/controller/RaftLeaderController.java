@@ -1,6 +1,5 @@
 package com.yaeby.spring_rabbitmq_test.controller;
 
-import com.yaeby.spring_rabbitmq_test.config.AppConfig;
 import com.yaeby.spring_rabbitmq_test.config.RaftLeaderConfig;
 import com.yaeby.spring_rabbitmq_test.dto.RaftLeader;
 import com.yaeby.spring_rabbitmq_test.response.ApiResponse;
@@ -23,10 +22,10 @@ public class RaftLeaderController {
 
     @PostMapping("/leader")
     public ResponseEntity<ApiResponse> updateLeader(@RequestBody RaftLeader leader) {
-        raftLeaderConfig.setHost(leader.getHost());
         raftLeaderConfig.setPort(leader.getPort());
+        raftLeaderConfig.setNode(leader.getNode());
         raftLeaderConfig.updateBaseUrl();
-        LOGGER.info("New leader updated {}", leader.getPort());
-        return ResponseEntity.ok(new ApiResponse("New leader set successful by Manager Server", raftLeaderConfig.getBaseUrl()));
+        LOGGER.info("New leader updated. Node: {} Port: {}", raftLeaderConfig.getNode(), raftLeaderConfig.getPort());
+        return ResponseEntity.ok(new ApiResponse("New leader acknowledged", raftLeaderConfig.getNode()));
     }
 }

@@ -39,7 +39,7 @@ public class Sender {
             );
 
             if (response.getStatusCode().is2xxSuccessful()) {
-                LOGGER.info("Response from leader server {}: {}", raftLeaderConfig.getPort(), response.getBody());
+                LOGGER.info("Response from leader '{}': {}", raftLeaderConfig.getPort(), response.getBody());
             } else {
                 LOGGER.error("Failed to send POST request: {}", response.getBody());
             }
@@ -68,7 +68,7 @@ public class Sender {
             );
 
             if (response.getStatusCode().is2xxSuccessful()) {
-                LOGGER.info("Response from leader server {}: Status Code = {}, Body = {}", raftLeaderConfig.getPort(), response.getStatusCode(), response.getBody());
+                LOGGER.info("Response from leader '{}': Status Code = {}, Body = {}", raftLeaderConfig.getPort(), response.getStatusCode(), response.getBody());
             } else {
                 LOGGER.error("Failed to send Multipart File request: Status Code = {}, Body = {}", response.getStatusCode(), response.getBody());
             }

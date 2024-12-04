@@ -24,14 +24,13 @@ rabbitmq:
     key: scraper_routing_json_key
 
 server:
-  address: 0.0.0.0
   port: 9090
 
 np-web-server:
   host: ${NP_WEB_SERVER_HOST:localhost}
   port: 8080
   protocol: http
-  base-url: ${np-web-server.protocol}://${np-web-server.host}:${np-web-server.port}
+  node: 1
 
 ftp:
   host: ${FTP_HOST:localhost}

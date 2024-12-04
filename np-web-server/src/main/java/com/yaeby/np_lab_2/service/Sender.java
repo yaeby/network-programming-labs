@@ -1,6 +1,5 @@
 package com.yaeby.np_lab_2.service;
 
-import com.yaeby.np_lab_2.config.AppConfig;
 import com.yaeby.np_lab_2.config.UdpConfig;
 import com.yaeby.np_lab_2.model.RaftLeader;
 import com.yaeby.np_lab_2.response.ApiResponse;
@@ -19,22 +18,23 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 @RequiredArgsConstructor
-public class LeaderSender {
+public class Sender {
 
-    @Value("${manager.server.url}")
+    @Value("${manager.server.base-url}")
     private String managerServerUrl;
 
     @Value("${server.port}")
     private int serverPort;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LeaderSender.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Sender.class);
     private final RestTemplate restTemplate;
+    private final UdpConfig udpConfig;
 
     public void sendNewLeader() {
         String url = managerServerUrl + "/raft/leader";
         try {
             RaftLeader leaderUpdate = new RaftLeader(
-                    "localhost",
+                    udpConfig.getNodeId(),
                     serverPort
             );
             HttpHeaders headers = new HttpHeaders();
@@ -46,7 +46,7 @@ public class LeaderSender {
                     ApiResponse.class
             );
             if (response.getStatusCode().is2xxSuccessful()) {
-                LOGGER.info("POST request sent successfully: {} from {}", response.getBody(), serverPort);
+                LOGGER.info("POST request sent successfully: {}", response.getBody());
             } else {
                 LOGGER.error("Failed to send POST request: {}", response.getBody());
             }
