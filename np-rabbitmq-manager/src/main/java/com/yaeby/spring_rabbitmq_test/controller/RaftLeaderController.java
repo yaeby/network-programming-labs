@@ -24,8 +24,9 @@ public class RaftLeaderController {
     public ResponseEntity<ApiResponse> updateLeader(@RequestBody RaftLeader leader) {
         raftLeaderConfig.setPort(leader.getPort());
         raftLeaderConfig.setNode(leader.getNode());
+        raftLeaderConfig.setHost(leader.getHost());
         raftLeaderConfig.updateBaseUrl();
-        LOGGER.info("New leader updated. Node: {} Port: {}", raftLeaderConfig.getNode(), raftLeaderConfig.getPort());
+        LOGGER.info("New leader updated. {}", leader);
         return ResponseEntity.ok(new ApiResponse("New leader acknowledged", raftLeaderConfig.getNode()));
     }
 }

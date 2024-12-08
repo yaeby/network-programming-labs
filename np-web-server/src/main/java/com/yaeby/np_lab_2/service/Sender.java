@@ -23,6 +23,9 @@ public class Sender {
     @Value("${manager.server.base-url}")
     private String managerServerUrl;
 
+    @Value("${server.host}")
+    private String serverHost;
+
     @Value("${server.port}")
     private int serverPort;
 
@@ -35,6 +38,7 @@ public class Sender {
         try {
             RaftLeader leaderUpdate = new RaftLeader(
                     udpConfig.getNodeId(),
+                    serverHost,
                     serverPort
             );
             HttpHeaders headers = new HttpHeaders();
@@ -51,7 +55,7 @@ public class Sender {
                 LOGGER.error("Failed to send POST request: {}", response.getBody());
             }
         } catch (HttpClientErrorException | HttpServerErrorException e) {
-            LOGGER.error("HTTP error sending car to endpoint: {}", e.getResponseBodyAsString(), e);
+            LOGGER.error("HTTP error sending new leader to endpoint: {}", e.getResponseBodyAsString(), e);
         } catch (Exception e) {
             LOGGER.error("Error announcing the new leader to Manager Server: {}", e.getMessage());
         }

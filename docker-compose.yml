@@ -1,0 +1,134 @@
+services:
+  manager:
+    container_name: manager_server
+    build: 
+      context: ./np-rabbitmq-manager
+      dockerfile: Dockerfile
+    ports:
+      - "9090:9090"
+    environment:
+      - SPRING_MAIL_HOST=smtp.gmail.com
+      - SPRING_MAIL_PORT=587
+      - EMAIL_USERNAME=${EMAIL_USERNAME}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - FTP_HOST=ftp
+      - NP_WEB_SERVER_HOST=node-1
+    networks:
+      - np_network
+    depends_on:
+      - rabbitmq
+      - node-1
+      - node-2
+      - node-3
+      - ftp
+
+  node-1:
+    container_name: node-1
+    build: 
+      context: ./np-web-server
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/interauto_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root123
+      - SERVER_HOST=node-1
+      - SERVER_PORT=8080
+      - NODE_ID=1
+      - MANAGER_SERVER_HOST=manager
+    networks:
+      - np_network
+    depends_on:
+      db:
+        condition: service_healthy
+
+  node-2:
+    container_name: node-2
+    build: 
+      context: ./np-web-server
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/interauto_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root123
+      - SERVER_HOST=node-2
+      - SERVER_PORT=8081
+      - NODE_ID=2
+      - MANAGER_SERVER_HOST=manager
+    networks:
+      - np_network
+    depends_on:
+      db:
+        condition: service_healthy
+
+  node-3:
+    container_name: node-3
+    build: 
+      context: ./np-web-server
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/interauto_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root123
+      - SERVER_HOST=node-3
+      - SERVER_PORT=8082
+      - NODE_ID=3
+      - MANAGER_SERVER_HOST=manager
+    networks:
+      - np_network
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:5.7
+    container_name: interauto_db
+    environment:
+      - MYSQL_DATABASE=interauto_db
+      - MYSQL_ROOT_PASSWORD=root123
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - np_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
+      interval: 10s
+      retries: 5
+      timeout: 3s
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - np_network
+
+  ftp:
+    image: stilliard/pure-ftpd:hardened
+    container_name: ftp
+    ports:
+      - "21:21"
+      - "30000-30009:30000-30009"
+    environment:
+      FTP_USER_NAME: testuser
+      FTP_USER_PASS: testpass
+      FTP_USER_HOME: /home/testuser
+    volumes:
+      - ./ftp_data:/home/testuser
+    networks:
+      - np_network
+
+networks:
+  np_network:
+    driver: bridge
+
+volumes:
+  mysql-data:
